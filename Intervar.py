@@ -57,7 +57,7 @@ InterVar homepage: <http://wInterVar.wglab.org>
 
 line_sum=0;
 
-if platform.python_version()< '3.0.0' :
+if platform.python_version() < '3.0.0' :
     import ConfigParser
 else:
     import configparser
@@ -485,52 +485,47 @@ def check_downdb():
             file_name="ALL.sites.2015_08" # hg19_ALL.sites.2015_08.txt
 
         dataset_file=paras['database_locat']+"/"+paras['buildver']+"_"+file_name+".txt"
-        if dbs != 'rmsk':
-            cmd="perl "+paras['annotate_variation']+" -buildver "+paras['buildver']+" -downdb -webfrom annovar "+file_name+" "+paras['database_locat']
-        if dbs == 'rmsk':
-            cmd="perl "+paras['annotate_variation']+" -buildver "+paras['buildver']+" -downdb "+file_name+" "+paras['database_locat']
         if  not os.path.isfile(dataset_file):
-            if dbs=="1000g2015aug":
-                file_name="1000g2015aug"
-                dataset_file=paras['database_locat']+"/"+paras['buildver']+"_"+file_name+".txt"
-                cmd="perl "+paras['annotate_variation']+" -buildver "+paras['buildver']+" -downdb -webfrom annovar "+file_name+" "+paras['database_locat']
+            if dbs == 'rmsk':
+                cmd="perl "+paras['annotate_variation']+" -buildver "+paras['buildver']+" -downdb "+dbs+" "+paras['database_locat']
+            else:
+                cmd="perl "+paras['annotate_variation']+" -buildver "+paras['buildver']+" -downdb -webfrom annovar "+dbs+" "+paras['database_locat']
             if paras['skip_annovar'] != True:
                 print("Warning: The Annovar dataset file of %s is not in %s,begin to download this %s ..." %(dbs,paras['database_locat'],dataset_file))
-    
-            if paras['skip_annovar'] != True:
                 print("%s" %cmd)
                 os.system(cmd)
 
 def check_input():
-    inputft= paras['inputfile_type']
-    if inputft.lower() == 'avinput' :
-        return
-    if inputft.lower() == 'vcf':
-        if os.path.isfile(paras['convert2annovar']):
-        #convert2annovar.pl -format vcf4 variantfile > variant.avinput
-            cmd="perl "+paras['convert2annovar']+" -format vcf4 "+ paras['inputfile']+"> "+paras['inputfile']+".avinput"
-            print("Warning: Begin to convert your vcf file of %s to AVinput of Annovar ..." % paras['inputfile'])
-            print("%s" %cmd)
-            os.system(cmd)
-        else:
-            print("Warning: The Annovar file [ %s ] is not here,please download ANNOVAR firstly: http://www.openbioinformatics.org/annovar" 
-                    % paras['convert2annovar'])
-            if paras['skip_annovar'] != True:
-                sys.exit()
-    if inputft.lower() == 'vcf_m':
-        if os.path.isfile(paras['convert2annovar']):
-        #convert2annovar.pl -format vcf4 variantfile > variant.avinput
-            cmd="perl "+paras['convert2annovar']+" -format vcf4 "+ paras['inputfile']+" --allsample   --outfile "+ paras['outfile']
-            print("Warning: Begin to convert your vcf file with multiple samples of %s to AVinput of Annovar with All.raw.highqc.vcf.<samplename>.avinput..." % paras['inputfile'])
-            print("Warning: Please attention that the sample names in VCF file should  contain letters/numners only, otherwise the converting may be failure!")
-            print("%s" %cmd)
-            os.system(cmd)
-        else:
-            print("Warning: The Annovar file [ %s ] is not here,please download ANNOVAR firstly: http://www.openbioinformatics.org/annovar" 
-                    % paras['convert2annovar'])
-            if paras['skip_annovar']  != True:
-                sys.exit()
-    return
+    # inputft= paras['inputfile_type']
+    # if inputft.lower() == 'avinput' :
+    #     return
+    # if inputft.lower() == 'vcf':
+    #     if os.path.isfile(paras['convert2annovar']):
+    #     #convert2annovar.pl -format vcf4 variantfile > variant.avinput
+    #         cmd="perl "+paras['convert2annovar']+" -format vcf4 "+ paras['inputfile']+"> "+paras['inputfile']+".avinput"
+    #         print("Warning: Begin to convert your vcf file of %s to AVinput of Annovar ..." % paras['inputfile'])
+    #         print("%s" %cmd)
+    #         os.system(cmd)
+    #     else:
+    #         print("Warning: The Annovar file [ %s ] is not here,please download ANNOVAR firstly: http://www.openbioinformatics.org/annovar" 
+    #                 % paras['convert2annovar'])
+    #         if paras['skip_annovar'] != True:
+    #             sys.exit()
+    # if inputft.lower() == 'vcf_m':
+    #     if os.path.isfile(paras['convert2annovar']):
+    #     #convert2annovar.pl -format vcf4 variantfile > variant.avinput
+    #         cmd="perl "+paras['convert2annovar']+" -format vcf4 "+ paras['inputfile']+" --allsample   --outfile "+ paras['outfile']
+    #         print("Warning: Begin to convert your vcf file with multiple samples of %s to AVinput of Annovar with All.raw.highqc.vcf.<samplename>.avinput..." % paras['inputfile'])
+    #         print("Warning: Please attention that the sample names in VCF file should  contain letters/numners only, otherwise the converting may be failure!")
+    #         print("%s" %cmd)
+    #         os.system(cmd)
+    #     else:
+    #         print("Warning: The Annovar file [ %s ] is not here,please download ANNOVAR firstly: http://www.openbioinformatics.org/annovar" 
+    #                 % paras['convert2annovar'])
+    #         if paras['skip_annovar']  != True:
+    #             sys.exit()
+    # return
+    pass
 
 def check_annovar_result():
 # table_annovar.pl example/ex1.avinput humandb/ -buildver hg19 -out myanno -remove -protocol refGene,esp6500siv2_all,1000g2015aug_all,avsnp147,ljb26_all,CLINSIG,gnomad_genome   -operation  g,f,f,f,f,f,f   -nastring . -csvout
@@ -547,20 +542,13 @@ def check_annovar_result():
         if paras['skip_annovar'] != True:
             sys.exit()
     if inputft.lower() == 'avinput' :
-        cmd="perl "+paras['table_annovar']+" "+paras['inputfile']+" "+paras['database_locat']+" -buildver "+paras['buildver']+" -remove -out "+ paras['outfile']+" -protocol refGene,esp6500siv2_all,1000g2015aug_all,avsnp147,dbnsfp42a,clinvar_20210501,gnomad_genome,dbscsnv11,rmsk,ensGene,knownGene  -operation  g,f,f,f,f,f,f,f,r,g,g   -nastring ."+annovar_options
+        cmd="perl "+paras['table_annovar']+" "+paras['inputfile']+" "+paras['database_locat']+" -buildver "+paras['buildver']+" -remove -out "+ paras['outfile']+" -protocol refGene,esp6500siv2_all,1000g2015aug_all,avsnp147,dbnsfp35a,clinvar_20200316,gnomad_genome,dbscsnv11,dbnsfp31a_interpro,rmsk,ensGene,knownGene  -operation  g,f,f,f,f,f,f,f,r,g,g   -nastring ."+annovar_options
         print("%s" %cmd)
         os.system(cmd)
     if inputft.lower() == 'vcf' :
-        cmd="perl "+paras['table_annovar']+" "+paras['inputfile']+".avinput "+paras['database_locat']+" -buildver "+paras['buildver']+" -remove -out "+ paras['outfile']+" -protocol refGene,esp6500siv2_all,1000g2015aug_all,avsnp147,dbnsfp42a,clinvar_20210501,gnomad_genome,dbscsnv11,rmsk,ensGene,knownGene   -operation  g,f,f,f,f,f,f,f,r,g,g   -nastring ."+annovar_options
+        cmd="perl "+paras['table_annovar']+" "+paras['inputfile']+".avinput "+paras['database_locat']+" -buildver "+paras['buildver']+" -remove -out "+ paras['outfile']+" -protocol refGene,esp6500siv2_all,1000g2015aug_all,avsnp147,dbnsfp35a,clinvar_20200316,gnomad_genome,dbscsnv11,dbnsfp31a_interpro,rmsk,ensGene,knownGene   -operation  g,f,f,f,f,f,f,f,r,g,g   -nastring ."+annovar_options
         print("%s" %cmd)
         os.system(cmd)
-    if inputft.lower() == 'vcf_m' :
-        for f in glob.iglob(paras['outfile']+"*.avinput"): 
-            print("INFO: Begin to annotate sample file of %s ...." %(f))
-            new_outfile=re.sub(".avinput","",f)
-            cmd="perl "+paras['table_annovar']+" "+f+" "+paras['database_locat']+" -buildver "+paras['buildver']+" -remove -out "+ new_outfile +" -protocol refGene,esp6500siv2_all,1000g2015aug_all,avsnp147,dbnsfp42a,clinvar_20210501,gnomad_genome,dbscsnv11,rmsk,ensGene,knownGene   -operation  g,f,f,f,f,f,f,f,r,g,g   -nastring ."+annovar_options
-            print("%s" %cmd)
-            os.system(cmd)
         
     
     return
@@ -1912,7 +1900,7 @@ def main():
                   help="The input file contains your variants", metavar="example/ex1.avinput")
 
     parser.add_option("--input_type", dest="input_type", action="store",
-                  help="The input file type, it can be  AVinput(Annovar's format),VCF(VCF with single sample),VCF_m(VCF with multiple samples)", metavar="AVinput")
+                  help="The input file type, it can be  AVinput(Annovar's format),VCF(VCF with single sample)", metavar="AVinput")
 
     parser.add_option("-o", "--output", dest="output", action="store",
                   help="The prefix of output file which contains the results, the file of results will be as [$$prefix].intervar ", metavar="example/myanno")
@@ -2105,14 +2093,14 @@ def main():
             some_file_fail=some_file_fail+1 
             print ("Warning: The InterVar seems not run correctly, please check your inputs and options in configure file")
 
-    if inputft.lower() == 'vcf_m' :
-        print ("Notice: The InterVar for VCF with multiple samples is finished, the output file is as [ %s.<samplename>.intervar ]" % annovar_outfile)
-        sum_sample=1;
-        for f in glob.iglob(paras['outfile']+"*."+paras['buildver']+"_multianno.txt.intervar"):
-            print ("Notice: The InterVar for VCF with multiple samples is finished, The %d sample output file is [ %s]" %(sum_sample,f))
-            sum_sample=sum_sample+1;
-        if some_file_fail>=1:    
-            print ("Warning: The InterVar seems not run correctly for your %d samples in the VCF, please check your inputs and options in configure file" %  some_file_fail )
+    # if inputft.lower() == 'vcf_m' :
+    #     print ("Notice: The InterVar for VCF with multiple samples is finished, the output file is as [ %s.<samplename>.intervar ]" % annovar_outfile)
+    #     sum_sample=1;
+    #     for f in glob.iglob(paras['outfile']+"*."+paras['buildver']+"_multianno.txt.intervar"):
+    #         print ("Notice: The InterVar for VCF with multiple samples is finished, The %d sample output file is [ %s]" %(sum_sample,f))
+    #         sum_sample=sum_sample+1;
+    #     if some_file_fail>=1:    
+    #         print ("Warning: The InterVar seems not run correctly for your %d samples in the VCF, please check your inputs and options in configure file" %  some_file_fail )
     if out_annf==0:
          print ("Warning: The InterVar seems not run correctly, please check your inputs , options and configure file!")
          print ("ERROR: The InterVar did not find the annotation result file from ANNOVAR!")
